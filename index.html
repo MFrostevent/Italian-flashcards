@@ -1,41 +1,127 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>index.html</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
-  <script src="https://unpkg.com/lucide@latest"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Italiensk Flashcard App</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap">
   <style>
-    :root {
-      --bg: #f9f9f9;
-      --card: #ffffff;
-      --text: #222;
-      --button: #007AFF;
-      --correct: #28a745;
-      --wrong: #dc3545;
-      --muted: #888;
-    }
-    body.dark {
-      --bg: #121212;
-      --card: #1e1e1e;
-      --text: #f1f1f1;
-      --button: #0A84FF;
-    }
     body {
       margin: 0;
       font-family: 'Inter', sans-serif;
-      background: var(--bg);
-      color: var(--text);
+      background-color: #f5f5f5;
+      color: #222;
       display: flex;
       flex-direction: column;
       align-items: center;
       padding: 1.5rem;
     }
+    h1 {
+      margin-bottom: 1rem;
+    }
+    .card {
+      background-color: white;
+      padding: 2rem;
+      margin-bottom: 1rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      border-radius: 12px;
+      font-size: 2rem;
+      text-align: center;
+      cursor: pointer;
+      width: 90%;
+      max-width: 400px;
+      transition: transform 0.3s ease;
+    }
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+    button {
+      font-size: 1rem;
+      padding: 0.6rem 1.2rem;
+      border: none;
+      border-radius: 6px;
+      background-color: #007AFF;
+      color: white;
+      cursor: pointer;
+    }
+    button:hover {
+      opacity: 0.9;
+    }
+    .stats {
+      margin-top: 1rem;
+      font-size: 1rem;
+    }
   </style>
 </head>
 <body>
-  <h1>Ferdig installert app</h1>
-  <p>Resten av koden er stor og ligger i din versjon. Du kan lime den inn i denne fila og laste den opp til GitHub.</p>
+  <h1>🇮🇹 Italiensk Flashcards</h1>
+  <div class="card" id="card">Klikk for å vise oversettelse</div>
+  <div class="controls">
+    <button onclick="prevCard()">⬅ Forrige</button>
+    <button onclick="playSound()">🔊 Spill lyd</button>
+    <button onclick="nextCard()">Neste ➡</button>
+  </div>
+  <div class="stats" id="stats"></div>
+
+  <script>
+    const flashcards = [
+      { it: "ciao", no: "hei" },
+      { it: "grazie", no: "takk" },
+      { it: "scuola", no: "skole" },
+      { it: "libro", no: "bok" },
+      { it: "andare", no: "å gå" },
+      { it: "pane", no: "brød" },
+      { it: "acqua", no: "vann" },
+      { it: "mangiare", no: "å spise" },
+      { it: "buongiorno", no: "god dag" },
+      { it: "famiglia", no: "familie" }
+    ];
+
+    let index = 0;
+    let flipped = false;
+    let correct = 0;
+    let viewed = 0;
+
+    const card = document.getElementById("card");
+    const stats = document.getElementById("stats");
+
+    function showCard() {
+      card.innerText = flipped ? flashcards[index].no : flashcards[index].it;
+      stats.innerText = `Sett: ${viewed} | Riktige: ${correct} (${Math.round((correct / Math.max(viewed,1)) * 100)}%)`;
+    }
+
+    card.addEventListener("click", () => {
+      flipped = !flipped;
+      if (!flipped) {
+        viewed++;
+      }
+      showCard();
+    });
+
+    function nextCard() {
+      index = (index + 1) % flashcards.length;
+      flipped = false;
+      showCard();
+    }
+
+    function prevCard() {
+      index = (index - 1 + flashcards.length) % flashcards.length;
+      flipped = false;
+      showCard();
+    }
+
+    function playSound() {
+      const utterance = new SpeechSynthesisUtterance(flashcards[index].it);
+      utterance.lang = "it-IT";
+      utterance.rate = 0.9;
+      speechSynthesis.speak(utterance);
+    }
+
+    showCard();
+  </script>
 </body>
 </html>
