@@ -34,8 +34,19 @@
       font-size: 0.95rem;
       z-index: 1000;
     }
+    .assistant-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
     .assistant h3 {
-      margin-top: 0;
+      margin: 0;
+    }
+    .close-btn {
+      background: transparent;
+      border: none;
+      font-size: 1.2rem;
+      cursor: pointer;
     }
     button {
       background: #007AFF;
@@ -58,7 +69,10 @@
   </div>
 
   <div class="assistant" id="aiAssistant">
-    <h3>🇮🇹 Maskott Assistent</h3>
+    <div class="assistant-header">
+      <h3>🇮🇹 Maskott Assistent</h3>
+      <button class="close-btn" onclick="document.getElementById('aiAssistant').style.display='none'">✖</button>
+    </div>
     <p id="aiResponse">Ciao! Jeg er her for å hjelpe deg med grammatikk og nye ord.</p>
     <button onclick="showGrammar()">Forklar grammatikk</button>
     <button onclick="suggestWord()">Foreslå nytt ord</button>
@@ -73,8 +87,70 @@
     ];
 
     const grammarTips = [
-      "🌟 'Essere' betyr å være – brukes for tilstand. 'Stare' brukes for midlertidige situasjoner og plassering.",
-      "🚻 Substantiv på -o er vanligvis hankjønn. På -a er hunkjønn.",
-      "📚 Flertall av -o → -i, og -a → -e. Eks: libro → libri, casa → case.",
-      "🧑‍🏫 Adjektiv bøyes etter kjønn og tall: un ragazzo alto, una ragazza alta.",
-      "🎯 Artiklene er: il (m), la (f), l’ (vokal), lo (s+konsonant eller z
+      "📖 Substantiv på -o er vanligvis hankjønn, på -a er hunkjønn.",
+      "📚 Flertall: -o → -i, -a → -e. Eks: libro → libri, casa → case.",
+      "🧩 Artikler: il (m), la (f), l’ foran vokal, lo foran s+konsonant.",
+      "🔤 Verb: -are (parlare), -ere (prendere), -ire (dormire) bøyes ulikt.",
+      "👥 Refleksive verb bruker ‘si’ og bøyes med hjelpeverb ‘essere’.",
+      "🧑‍🏫 Adjektiv følger kjønn og tall: ragazzo italiano, ragazza italiana."
+    ];
+
+    const wordSuggestions = [
+      "👩 la donna = kvinnen",
+      "🚆 il treno = toget",
+      "🗣 parlare = å snakke",
+      "🍽 mangiare = å spise",
+      "🧑‍💼 lavorare = å jobbe",
+      "📖 leggere = å lese",
+      "✍ scrivere = å skrive",
+      "👨‍👩‍👧‍👦 famiglia = familie",
+      "🏫 scuola = skole"
+    ];
+
+    let index = 0;
+    let flipped = false;
+
+    const card = document.getElementById("card");
+    const aiResponse = document.getElementById("aiResponse");
+
+    function showCard() {
+      card.innerText = flipped ? flashcards[index].no : flashcards[index].it;
+    }
+
+    card.addEventListener("click", () => {
+      flipped = !flipped;
+      showCard();
+    });
+
+    function nextCard() {
+      index = (index + 1) % flashcards.length;
+      flipped = false;
+      showCard();
+    }
+
+    function prevCard() {
+      index = (index - 1 + flashcards.length) % flashcards.length;
+      flipped = false;
+      showCard();
+    }
+
+    function playSound() {
+      const utterance = new SpeechSynthesisUtterance(flashcards[index].it);
+      utterance.lang = "it-IT";
+      speechSynthesis.speak(utterance);
+    }
+
+    function showGrammar() {
+      const tip = grammarTips[Math.floor(Math.random() * grammarTips.length)];
+      aiResponse.innerText = tip;
+    }
+
+    function suggestWord() {
+      const suggestion = wordSuggestions[Math.floor(Math.random() * wordSuggestions.length)];
+      aiResponse.innerText = "📌 Nytt ord: " + suggestion;
+    }
+
+    showCard();
+  </script>
+</body>
+</html>
