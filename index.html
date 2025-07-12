@@ -3,156 +3,78 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Italiensk Flashcards</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+  <title>Italiensk Flashcards + Maskott</title>
   <style>
-    :root {
-      --blue: #3B82F6;
-      --white: #ffffff;
-      --gray: #f3f4f6;
-      --text: #111827;
-    }
-    @media (prefers-color-scheme: dark) {
-      :root {
-        --white: #1f2937;
-        --gray: #374151;
-        --text: #f9fafb;
-      }
-    }
-
     body {
-      margin: 0;
       font-family: 'Inter', sans-serif;
-      background-color: var(--gray);
-      color: var(--text);
+      margin: 0;
+      background: #f4f4f4;
+      color: #222;
+      padding-bottom: 100px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 2rem;
     }
-
-    h1 {
-      font-size: 2rem;
-      margin-bottom: 2rem;
-    }
-
-    .card {
-      width: 90%;
-      max-width: 400px;
-      aspect-ratio: 3 / 2;
-      background-color: var(--white);
-      border-radius: 16px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-size: 2rem;
-      box-shadow: 0 8px 16px rgba(0,0,0,0.1);
-      cursor: pointer;
-      transition: transform 0.3s ease;
-      transform-style: preserve-3d;
-      text-align: center;
+    .card, .assistant {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
       padding: 1rem;
+      margin: 1rem;
+      max-width: 400px;
+      width: 90%;
+      text-align: center;
     }
-
-    .card:hover {
-      transform: scale(1.02);
+    .assistant {
+      position: fixed;
+      bottom: 0;
+      right: 0;
+      margin: 1rem;
+      background: #fffbe6;
+      font-size: 0.95rem;
+      z-index: 1000;
     }
-
-    .controls {
-      margin-top: 1.5rem;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.75rem;
-      justify-content: center;
+    .assistant h3 {
+      margin-top: 0;
     }
-
     button {
-      background-color: var(--blue);
+      background: #007AFF;
+      color: white;
       border: none;
       padding: 0.6rem 1.2rem;
       border-radius: 8px;
-      color: white;
-      font-size: 1rem;
       cursor: pointer;
-      transition: background-color 0.2s ease;
-    }
-
-    button:hover {
-      background-color: #2563eb;
-    }
-
-    .stats {
-      margin-top: 1rem;
-      font-size: 0.95rem;
-      color: var(--text);
+      margin: 0.5rem;
     }
   </style>
 </head>
 <body>
-  <h1>🇮🇹 Flashcards på Italiensk</h1>
+  <h1>🇮🇹 Italiensk Flashcards</h1>
   <div class="card" id="card">Klikk for å vise oversettelse</div>
-  <div class="controls">
+  <div>
     <button onclick="prevCard()">⬅ Forrige</button>
     <button onclick="playSound()">🔊 Spill lyd</button>
     <button onclick="nextCard()">Neste ➡</button>
   </div>
-  <div class="stats" id="stats"></div>
+
+  <div class="assistant" id="aiAssistant">
+    <h3>🇮🇹 Maskott Assistent</h3>
+    <p id="aiResponse">Ciao! Jeg er her for å hjelpe deg med grammatikk og nye ord.</p>
+    <button onclick="showGrammar()">Forklar grammatikk</button>
+    <button onclick="suggestWord()">Foreslå nytt ord</button>
+  </div>
 
   <script>
     const flashcards = [
       { it: "ciao", no: "hei" },
       { it: "grazie", no: "takk" },
       { it: "scuola", no: "skole" },
-      { it: "libro", no: "bok" },
-      { it: "andare", no: "å gå" },
-      { it: "pane", no: "brød" },
-      { it: "acqua", no: "vann" },
-      { it: "mangiare", no: "å spise" },
-      { it: "buongiorno", no: "god dag" },
-      { it: "famiglia", no: "familie" }
+      { it: "libro", no: "bok" }
     ];
 
-    let index = 0;
-    let flipped = false;
-    let correct = 0;
-    let viewed = 0;
-
-    const card = document.getElementById("card");
-    const stats = document.getElementById("stats");
-
-    function showCard() {
-      card.innerText = flipped ? flashcards[index].no : flashcards[index].it;
-      stats.innerText = `Sett: ${viewed} | Riktige: ${correct} (${Math.round((correct / Math.max(viewed,1)) * 100)}%)`;
-    }
-
-    card.addEventListener("click", () => {
-      flipped = !flipped;
-      if (!flipped) {
-        viewed++;
-      }
-      showCard();
-    });
-
-    function nextCard() {
-      index = (index + 1) % flashcards.length;
-      flipped = false;
-      showCard();
-    }
-
-    function prevCard() {
-      index = (index - 1 + flashcards.length) % flashcards.length;
-      flipped = false;
-      showCard();
-    }
-
-    function playSound() {
-      const utterance = new SpeechSynthesisUtterance(flashcards[index].it);
-      utterance.lang = "it-IT";
-      utterance.rate = 0.9;
-      speechSynthesis.speak(utterance);
-    }
-
-    showCard();
-  </script>
-</body>
-</html>
+    const grammarTips = [
+      "🌟 'Essere' betyr å være – brukes for tilstand. 'Stare' brukes for midlertidige situasjoner og plassering.",
+      "🚻 Substantiv på -o er vanligvis hankjønn. På -a er hunkjønn.",
+      "📚 Flertall av -o → -i, og -a → -e. Eks: libro → libri, casa → case.",
+      "🧑‍🏫 Adjektiv bøyes etter kjønn og tall: un ragazzo alto, una ragazza alta.",
+      "🎯 Artiklene er: il (m), la (f), l’ (vokal), lo (s+konsonant eller z
